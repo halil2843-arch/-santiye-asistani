@@ -1,0 +1,225 @@
+
+INFO:     Started server process [23912]
+INFO:     Waiting for application startup.
+2026-05-11 17:45:46,674 | INFO     | app.main — Veritabaný tablolarý kontrol ediliyor / oluþturuluyor…
+2026-05-11 17:45:46,675 | DEBUG    | aiosqlite — executing <function connect.<locals>.connector at 0x000001A6B4277ED0>
+2026-05-11 17:45:46,678 | DEBUG    | aiosqlite — operation <function connect.<locals>.connector at 0x000001A6B4277ED0> completed
+2026-05-11 17:45:46,680 | DEBUG    | aiosqlite — executing functools.partial(<built-in method create_function of sqlite3.Connection object at 0x000001A6C87E8400>, 'regexp', 2, <function SQLiteDialect_pysqlite.on_connect.<locals>.regexp at 0x000001A6B6D69850>, deterministic=True)
+2026-05-11 17:45:46,682 | DEBUG    | aiosqlite — operation functools.partial(<built-in method create_function of sqlite3.Connection object at 0x000001A6C87E8400>, 'regexp', 2, <function SQLiteDialect_pysqlite.on_connect.<locals>.regexp at 0x000001A6B6D69850>, deterministic=True) completed
+2026-05-11 17:45:46,682 | DEBUG    | aiosqlite — executing functools.partial(<built-in method create_function of sqlite3.Connection object at 0x000001A6C87E8400>, 'floor', 1, <built-in function floor>, deterministic=True)
+2026-05-11 17:45:46,682 | DEBUG    | aiosqlite — operation functools.partial(<built-in method create_function of sqlite3.Connection object at 0x000001A6C87E8400>, 'floor', 1, <built-in function floor>, deterministic=True) completed
+2026-05-11 17:45:46,683 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,683 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,683 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E0840>, 'PRAGMA read_uncommitted', [])
+2026-05-11 17:45:46,684 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E0840>, 'PRAGMA read_uncommitted', []) completed
+2026-05-11 17:45:46,684 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E0840>)
+2026-05-11 17:45:46,685 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E0840>) completed
+2026-05-11 17:45:46,685 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E0840>)
+2026-05-11 17:45:46,686 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E0840>) completed
+2026-05-11 17:45:46,686 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,686 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,687 | INFO     | sqlalchemy.engine.Engine — BEGIN (implicit)
+2026-05-11 17:45:46,688 | INFO     | sqlalchemy.engine.Engine — PRAGMA main.table_info("musteriler")
+2026-05-11 17:45:46,689 | INFO     | sqlalchemy.engine.Engine — [raw sql] ()
+2026-05-11 17:45:46,690 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,690 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,691 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E0E40>, 'PRAGMA main.table_info("musteriler")', ())
+2026-05-11 17:45:46,692 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E0E40>, 'PRAGMA main.table_info("musteriler")', ()) completed
+2026-05-11 17:45:46,692 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E0E40>)
+2026-05-11 17:45:46,692 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E0E40>) completed
+2026-05-11 17:45:46,692 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E0E40>)
+2026-05-11 17:45:46,693 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E0E40>) completed
+2026-05-11 17:45:46,693 | INFO     | sqlalchemy.engine.Engine — PRAGMA main.table_info("kullanicilar")
+2026-05-11 17:45:46,693 | INFO     | sqlalchemy.engine.Engine — [raw sql] ()
+2026-05-11 17:45:46,694 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,694 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,694 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E1240>, 'PRAGMA main.table_info("kullanicilar")', ())
+2026-05-11 17:45:46,694 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E1240>, 'PRAGMA main.table_info("kullanicilar")', ()) completed
+2026-05-11 17:45:46,695 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E1240>)
+2026-05-11 17:45:46,696 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E1240>) completed
+2026-05-11 17:45:46,696 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E1240>)
+2026-05-11 17:45:46,697 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E1240>) completed
+2026-05-11 17:45:46,697 | INFO     | sqlalchemy.engine.Engine — PRAGMA main.table_info("santiyeler")
+2026-05-11 17:45:46,697 | INFO     | sqlalchemy.engine.Engine — [raw sql] ()
+2026-05-11 17:45:46,698 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,698 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,698 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E15C0>, 'PRAGMA main.table_info("santiyeler")', ())
+2026-05-11 17:45:46,698 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E15C0>, 'PRAGMA main.table_info("santiyeler")', ()) completed
+2026-05-11 17:45:46,699 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E15C0>)
+2026-05-11 17:45:46,699 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E15C0>) completed
+2026-05-11 17:45:46,699 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E15C0>)
+2026-05-11 17:45:46,699 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E15C0>) completed
+2026-05-11 17:45:46,699 | INFO     | sqlalchemy.engine.Engine — PRAGMA main.table_info("sablonlar")
+2026-05-11 17:45:46,700 | INFO     | sqlalchemy.engine.Engine — [raw sql] ()
+2026-05-11 17:45:46,700 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,700 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,700 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E1940>, 'PRAGMA main.table_info("sablonlar")', ())
+2026-05-11 17:45:46,700 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E1940>, 'PRAGMA main.table_info("sablonlar")', ()) completed
+2026-05-11 17:45:46,701 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E1940>)
+2026-05-11 17:45:46,701 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E1940>) completed
+2026-05-11 17:45:46,701 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E1940>)
+2026-05-11 17:45:46,701 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E1940>) completed
+2026-05-11 17:45:46,701 | INFO     | sqlalchemy.engine.Engine — PRAGMA main.table_info("raporlar")
+2026-05-11 17:45:46,702 | INFO     | sqlalchemy.engine.Engine — [raw sql] ()
+2026-05-11 17:45:46,702 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,702 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,702 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E1CC0>, 'PRAGMA main.table_info("raporlar")', ())
+2026-05-11 17:45:46,702 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E1CC0>, 'PRAGMA main.table_info("raporlar")', ()) completed
+2026-05-11 17:45:46,703 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E1CC0>)
+2026-05-11 17:45:46,703 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E1CC0>) completed
+2026-05-11 17:45:46,703 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E1CC0>)
+2026-05-11 17:45:46,703 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E1CC0>) completed
+2026-05-11 17:45:46,704 | INFO     | sqlalchemy.engine.Engine — PRAGMA main.table_info("pending_whatsapp")
+2026-05-11 17:45:46,704 | INFO     | sqlalchemy.engine.Engine — [raw sql] ()
+2026-05-11 17:45:46,704 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,704 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,704 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E2040>, 'PRAGMA main.table_info("pending_whatsapp")', ())
+2026-05-11 17:45:46,705 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E2040>, 'PRAGMA main.table_info("pending_whatsapp")', ()) completed
+2026-05-11 17:45:46,705 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E2040>)
+2026-05-11 17:45:46,705 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E2040>) completed
+2026-05-11 17:45:46,705 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E2040>)
+2026-05-11 17:45:46,705 | INFO     | sqlalchemy.engine.Engine — PRAGMA main.table_info("whatsapp_mesajlari")
+2026-05-11 17:45:46,706 | INFO     | sqlalchemy.engine.Engine — [raw sql] ()
+2026-05-11 17:45:46,706 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E2040>) completed
+2026-05-11 17:45:46,706 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,706 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,706 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E23C0>, 'PRAGMA main.table_info("whatsapp_mesajlari")', ())
+2026-05-11 17:45:46,706 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E23C0>, 'PRAGMA main.table_info("whatsapp_mesajlari")', ()) completed
+2026-05-11 17:45:46,707 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E23C0>)
+2026-05-11 17:45:46,707 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E23C0>) completed
+2026-05-11 17:45:46,707 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E23C0>)
+2026-05-11 17:45:46,707 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E23C0>) completed
+2026-05-11 17:45:46,707 | INFO     | sqlalchemy.engine.Engine — PRAGMA main.table_info("cikarilanlar")
+2026-05-11 17:45:46,707 | INFO     | sqlalchemy.engine.Engine — [raw sql] ()
+2026-05-11 17:45:46,708 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,708 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,708 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E2740>, 'PRAGMA main.table_info("cikarilanlar")', ())
+2026-05-11 17:45:46,708 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E2740>, 'PRAGMA main.table_info("cikarilanlar")', ()) completed
+2026-05-11 17:45:46,708 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E2740>)
+2026-05-11 17:45:46,709 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E2740>) completed
+2026-05-11 17:45:46,709 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E2740>)
+2026-05-11 17:45:46,709 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E2740>) completed
+2026-05-11 17:45:46,709 | INFO     | sqlalchemy.engine.Engine — COMMIT
+2026-05-11 17:45:46,710 | DEBUG    | aiosqlite — executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,710 | DEBUG    | aiosqlite — operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,710 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:45:46,710 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:45:46,711 | INFO     | app.main — Uygulama baþlatýldý. DEBUG=True
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-05-11 17:46:32,175 | INFO     | sqlalchemy.engine.Engine — BEGIN (implicit)
+2026-05-11 17:46:32,219 | INFO     | sqlalchemy.engine.Engine — SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at 
+FROM kullanicilar 
+WHERE kullanicilar.email = ?
+2026-05-11 17:46:32,219 | INFO     | sqlalchemy.engine.Engine — [generated in 0.00035s] ('admin@example.com',)
+2026-05-11 17:46:32,219 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:46:32,219 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:46:32,219 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E3BC0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@example.com',))
+2026-05-11 17:46:32,220 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E3BC0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@example.com',)) completed
+2026-05-11 17:46:32,220 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E3BC0>)
+2026-05-11 17:46:32,220 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E3BC0>) completed
+2026-05-11 17:46:32,221 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E3BC0>)
+2026-05-11 17:46:32,221 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E3BC0>) completed
+2026-05-11 17:46:32,221 | INFO     | sqlalchemy.engine.Engine — ROLLBACK
+2026-05-11 17:46:32,222 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:46:32,222 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:46:32,222 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:46:32,222 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:26,639 | INFO     | sqlalchemy.engine.Engine — BEGIN (implicit)
+2026-05-11 17:48:26,641 | INFO     | sqlalchemy.engine.Engine — SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at 
+FROM kullanicilar 
+WHERE kullanicilar.email = ?
+2026-05-11 17:48:26,641 | INFO     | sqlalchemy.engine.Engine — [cached since 114.4s ago] ('admin@sigma.com',)
+2026-05-11 17:48:26,641 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:26,642 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:26,643 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C89EABC0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',))
+2026-05-11 17:48:26,643 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C89EABC0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',)) completed
+2026-05-11 17:48:26,644 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C89EABC0>)
+2026-05-11 17:48:26,645 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C89EABC0>) completed
+2026-05-11 17:48:26,645 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C89EABC0>)
+2026-05-11 17:48:26,646 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C89EABC0>) completed
+2026-05-11 17:48:26,647 | WARNING  | passlib.handlers.bcrypt — (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "C:\Users\SGM\AppData\Local\Programs\Python\Python314\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2026-05-11 17:48:26,651 | DEBUG    | passlib.handlers.bcrypt — detected 'bcrypt' backend, version '<unknown>'
+2026-05-11 17:48:26,651 | DEBUG    | passlib.handlers.bcrypt — 'bcrypt' backend lacks $2$ support, enabling workaround
+2026-05-11 17:48:26,948 | INFO     | sqlalchemy.engine.Engine — ROLLBACK
+2026-05-11 17:48:26,948 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:26,948 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:26,949 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:26,950 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:27,268 | INFO     | sqlalchemy.engine.Engine — BEGIN (implicit)
+2026-05-11 17:48:27,269 | INFO     | sqlalchemy.engine.Engine — SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at 
+FROM kullanicilar 
+WHERE kullanicilar.email = ?
+2026-05-11 17:48:27,269 | INFO     | sqlalchemy.engine.Engine — [cached since 115s ago] ('admin@sigma.com',)
+2026-05-11 17:48:27,269 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:27,269 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:27,269 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C893C5C0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',))
+2026-05-11 17:48:27,270 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C893C5C0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',)) completed
+2026-05-11 17:48:27,270 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C893C5C0>)
+2026-05-11 17:48:27,270 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C893C5C0>) completed
+2026-05-11 17:48:27,271 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C893C5C0>)
+2026-05-11 17:48:27,271 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C893C5C0>) completed
+2026-05-11 17:48:27,550 | INFO     | sqlalchemy.engine.Engine — ROLLBACK
+2026-05-11 17:48:27,551 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:27,552 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:27,552 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:27,552 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:27,785 | INFO     | sqlalchemy.engine.Engine — BEGIN (implicit)
+2026-05-11 17:48:27,785 | INFO     | sqlalchemy.engine.Engine — SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at 
+FROM kullanicilar 
+WHERE kullanicilar.email = ?
+2026-05-11 17:48:27,786 | INFO     | sqlalchemy.engine.Engine — [cached since 115.6s ago] ('admin@sigma.com',)
+2026-05-11 17:48:27,786 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:27,787 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:27,789 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C893C2C0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',))
+2026-05-11 17:48:27,790 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C893C2C0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',)) completed
+2026-05-11 17:48:27,791 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C893C2C0>)
+2026-05-11 17:48:27,791 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C893C2C0>) completed
+2026-05-11 17:48:27,791 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C893C2C0>)
+2026-05-11 17:48:27,792 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C893C2C0>) completed
+2026-05-11 17:48:28,104 | INFO     | sqlalchemy.engine.Engine — ROLLBACK
+2026-05-11 17:48:28,105 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:28,105 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:28,106 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:28,106 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:28,337 | INFO     | sqlalchemy.engine.Engine — BEGIN (implicit)
+2026-05-11 17:48:28,338 | INFO     | sqlalchemy.engine.Engine — SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at 
+FROM kullanicilar 
+WHERE kullanicilar.email = ?
+2026-05-11 17:48:28,338 | INFO     | sqlalchemy.engine.Engine — [cached since 116.1s ago] ('admin@sigma.com',)
+2026-05-11 17:48:28,338 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:28,338 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:28,338 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E1940>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',))
+2026-05-11 17:48:28,339 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C87E1940>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',)) completed
+2026-05-11 17:48:28,339 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E1940>)
+2026-05-11 17:48:28,339 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C87E1940>) completed
+2026-05-11 17:48:28,339 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E1940>)
+2026-05-11 17:48:28,339 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C87E1940>) completed
+2026-05-11 17:48:28,607 | INFO     | sqlalchemy.engine.Engine — ROLLBACK
+2026-05-11 17:48:28,608 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:28,608 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:28,608 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:28,608 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:28,848 | INFO     | sqlalchemy.engine.Engine — BEGIN (implicit)
+2026-05-11 17:48:28,849 | INFO     | sqlalchemy.engine.Engine — SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at 
+FROM kullanicilar 
+WHERE kullanicilar.email = ?
+2026-05-11 17:48:28,849 | INFO     | sqlalchemy.engine.Engine — [cached since 116.6s ago] ('admin@sigma.com',)
+2026-05-11 17:48:28,849 | DEBUG    | aiosqlite — executing functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:28,849 | DEBUG    | aiosqlite — operation functools.partial(<built-in method cursor of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:28,850 | DEBUG    | aiosqlite — executing functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C89EA6C0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',))
+2026-05-11 17:48:28,850 | DEBUG    | aiosqlite — operation functools.partial(<built-in method execute of sqlite3.Cursor object at 0x000001A6C89EA6C0>, 'SELECT kullanicilar.id, kullanicilar.musteri_id, kullanicilar.ad_soyad, kullanicilar.email, kullanicilar.telefon_no, kullanicilar.rol, kullanicilar.sifre_hash, kullanicilar.aktif, kullanicilar.created_at, kullanicilar.updated_at \nFROM kullanicilar \nWHERE kullanicilar.email = ?', ('admin@sigma.com',)) completed
+2026-05-11 17:48:28,851 | DEBUG    | aiosqlite — executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C89EA6C0>)
+2026-05-11 17:48:28,852 | DEBUG    | aiosqlite — operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x000001A6C89EA6C0>) completed
+2026-05-11 17:48:28,852 | DEBUG    | aiosqlite — executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C89EA6C0>)
+2026-05-11 17:48:28,853 | DEBUG    | aiosqlite — operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x000001A6C89EA6C0>) completed
+2026-05-11 17:48:29,115 | INFO     | sqlalchemy.engine.Engine — ROLLBACK
+2026-05-11 17:48:29,115 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:29,115 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed
+2026-05-11 17:48:29,116 | DEBUG    | aiosqlite — executing functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>)
+2026-05-11 17:48:29,116 | DEBUG    | aiosqlite — operation functools.partial(<built-in method rollback of sqlite3.Connection object at 0x000001A6C87E8400>) completed

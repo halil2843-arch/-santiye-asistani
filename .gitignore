@@ -1,0 +1,31 @@
+# ───────── Python ─────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.so
+
+# ───────── Ortam & Gizli ─────────
+backend/.env
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+backend/uvicorn.log
+backend/next.log
+
+# ───────── Yükleme & Çıktı Dizinleri ─────────
+backend/uploads/
+backend/outputs/
+
+# ───────── Frontend ─────────
+frontend/node_modules/
+frontend/.next/
+frontend/next.log
+frontend/.env.local
+
+# ───────── OS ─────────
+.DS_Store
+Thumbs.db
+desktop.ini
