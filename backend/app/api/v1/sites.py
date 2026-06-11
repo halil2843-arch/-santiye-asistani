@@ -38,6 +38,11 @@ class SantiyeCreate(BaseModel):
         default=None,
         description="E.164 formatında numara: +905551234567",
     )
+    il: str | None = Field(default=None, max_length=100)
+    ilce: str | None = Field(default=None, max_length=100)
+    enlem: float | None = Field(default=None)
+    boylam: float | None = Field(default=None)
+    arsiv: bool = Field(default=False)
 
     @field_validator("whatsapp_numara")
     @classmethod
@@ -61,6 +66,11 @@ class SantiyeResponse(BaseModel):
     adres: str | None = None
     whatsapp_numara: str | None = None
     aktif: bool
+    il: str | None = None
+    ilce: str | None = None
+    enlem: float | None = None
+    boylam: float | None = None
+    arsiv: bool = False
 
 
 class SantiyeUpdate(BaseModel):
@@ -69,6 +79,11 @@ class SantiyeUpdate(BaseModel):
     isim: str | None = Field(default=None, min_length=1, max_length=200)
     adres: str | None = Field(default=None, max_length=500)
     aktif: bool | None = None
+    il: str | None = Field(default=None, max_length=100)
+    ilce: str | None = Field(default=None, max_length=100)
+    enlem: float | None = None
+    boylam: float | None = None
+    arsiv: bool | None = None
 
     @field_validator("isim")
     @classmethod
@@ -156,6 +171,11 @@ async def create_site(payload: SantiyeCreate, db: DbDep) -> Santiye:
         isim=payload.isim,
         adres=payload.adres,
         whatsapp_numara=payload.whatsapp_numara,
+        il=payload.il,
+        ilce=payload.ilce,
+        enlem=payload.enlem,
+        boylam=payload.boylam,
+        arsiv=payload.arsiv,
     )
     db.add(santiye)
     await db.commit()
@@ -192,6 +212,16 @@ async def update_site(
         santiye.adres = payload.adres
     if payload.aktif is not None:
         santiye.aktif = payload.aktif
+    if payload.il is not None:
+        santiye.il = payload.il
+    if payload.ilce is not None:
+        santiye.ilce = payload.ilce
+    if payload.enlem is not None:
+        santiye.enlem = payload.enlem
+    if payload.boylam is not None:
+        santiye.boylam = payload.boylam
+    if payload.arsiv is not None:
+        santiye.arsiv = payload.arsiv
 
     db.add(santiye)
     await db.commit()

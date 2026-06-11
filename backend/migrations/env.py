@@ -16,8 +16,12 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./santiye.db")
+# asyncpg driver: her iki postgresql:// varyantını normalize et
 if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif DATABASE_URL.startswith("postgres://"):
+    # Heroku / Railway tarzı kısa URL
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
 
 
 def run_migrations_offline() -> None:

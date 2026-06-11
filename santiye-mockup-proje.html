@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proje Detay — Şantiye Asistanı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1117;--surface:#161B26;--card:#1E2636;--card2:#252F42;
+  --border:rgba(255,255,255,.07);
+  --amber:#F59E0B;--amdk:#B45309;--blue:#3B82F6;--green:#10B981;
+  --red:#EF4444;--txt:#F1F5F9;--txt2:#94A3B8;--txt3:#475569;
+  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;--bh:68px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+body{font-family:var(--fb);background:#04060D;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;padding:40px 20px 60px}
+
+.page-title{font-family:var(--fh);font-size:12px;font-weight:800;
+  letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);
+  margin-bottom:6px;text-align:center}
+.page-sub{font-size:11px;color:rgba(255,255,255,.1);margin-bottom:30px;
+  text-align:center;letter-spacing:.5px}
+
+/* ── Phone Shell ── */
+.phone{width:375px;background:var(--bg);border-radius:48px;overflow:hidden;
+  position:relative;display:flex;flex-direction:column;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 40px 100px rgba(0,0,0,.6),
+             0 0 60px rgba(245,158,11,.05)}
+
+/* Status */
+.sb{background:var(--surface);padding:13px 24px 7px;display:flex;
+  justify-content:space-between;align-items:center;font-size:12px;font-weight:600;color:var(--txt2)}
+.si{display:flex;gap:6px;align-items:center}
+
+/* ── Project Hero ── */
+.hero{
+  background:linear-gradient(160deg,#1a2d4a 0%,#111827 60%,#0E1117 100%);
+  padding:14px 20px 0;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;right:-40px;top:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(16,185,129,.1) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.back-btn{width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.07);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  color:var(--txt2);cursor:pointer}
+.back-btn svg{width:16px;height:16px}
+.hero-actions{display:flex;gap:8px}
+.hact{width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.07);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  color:var(--txt2);cursor:pointer;position:relative}
+.hact svg{width:16px;height:16px}
+.hact.amber-bg{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.3);color:var(--amber)}
+
+/* Toggle */
+.toggle{position:relative;width:40px;height:22px;cursor:pointer;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.tsl{position:absolute;inset:0;border-radius:22px;background:var(--card2);
+  border:1px solid var(--border);transition:all .2s}
+.tsl::after{content:'';position:absolute;top:4px;left:4px;width:12px;height:12px;
+  border-radius:50%;background:var(--txt3);transition:all .2s}
+.toggle input:checked + .tsl{background:rgba(16,185,129,.2);border-color:var(--green)}
+.toggle input:checked + .tsl::after{transform:translateX(18px);background:var(--green)}
+
+.hero-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px}
+.hero-title{font-family:var(--fh);font-size:24px;font-weight:800;color:var(--txt);
+  letter-spacing:-.4px;line-height:1.1}
+.hero-loc{font-size:12px;color:var(--txt3);margin-top:4px;display:flex;align-items:center;gap:4px}
+.hero-loc svg{width:11px;height:11px;color:var(--txt3)}
+.hero-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.htag{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;
+  font-size:11px;font-weight:500}
+.htag.green{background:rgba(16,185,129,.12);color:var(--green)}
+.htag.amber{background:rgba(245,158,11,.12);color:var(--amber)}
+.htag.blue{background:rgba(59,130,246,.12);color:var(--blue)}
+.htag.slate{background:rgba(148,163,184,.1);color:var(--txt2)}
+
+/* Progress strip */
+.progress-strip{padding:14px 20px 0}
+.ps-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ps-lbl{font-size:11px;color:var(--txt3)}
+.ps-pct{font-family:var(--fh);font-size:14px;font-weight:800;color:var(--green)}
+.ps-track{height:6px;background:var(--card2);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.ps-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green),#34d399)}
+
+/* Stat row */
+.stat-row{display:flex;border-top:1px solid var(--border);background:var(--surface)}
+.stat{flex:1;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-v{font-family:var(--fh);font-size:18px;font-weight:800;line-height:1}
+.stat-l{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;text-align:center}
+
+/* Scroll */
+.sa{overflow-y:auto;padding-bottom:16px;max-height:540px}
+.sa::-webkit-scrollbar{width:3px}
+.sa::-webkit-scrollbar-track{background:transparent}
+.sa::-webkit-scrollbar-thumb{background:var(--card2);border-radius:4px}
+
+.slabel{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  color:var(--txt3);padding:16px 20px 8px}
+
+/* ── Section Grid (2 col big cards) ── */
+.sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 4px}
+.sec-card{
+  background:var(--card);border-radius:18px;border:1px solid var(--border);
+  padding:16px 14px 14px;display:flex;flex-direction:column;gap:9px;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:border-color .15s,transform .12s;
+}
+.sec-card:active{transform:scale(.97)}
+.sec-card.warn{border-left:3px solid var(--amber)}
+.sec-card.danger{border-left:3px solid var(--red)}
+.sec-card.highlight{border-left:3px solid var(--green)}
+
+.sec-ico{width:42px;height:42px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;font-size:20px}
+.sec-name{font-size:13px;font-weight:600;color:var(--txt);line-height:1.2}
+.sec-sub{font-size:10px;color:var(--txt3);line-height:1.3}
+.sec-badge{position:absolute;top:12px;right:12px;
+  min-width:20px;height:20px;border-radius:10px;
+  font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 5px}
+.sec-badge.red{background:var(--red);color:#fff}
+.sec-badge.amber{background:var(--amber);color:#000}
+.sec-badge.green{background:rgba(16,185,129,.2);color:var(--green)}
+
+/* ── Full-width section card ── */
+.sec-full{
+  margin:0 20px 10px;
+  background:var(--card);border-radius:18px;border:1px solid var(--border);
+  padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:transform .12s;
+}
+.sec-full:active{transform:scale(.99)}
+.sec-full.danger{border-left:3px solid var(--red)}
+.sec-full.warn{border-left:3px solid var(--amber)}
+.sec-full-ico{width:44px;height:44px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.sec-full-info{flex:1;min-width:0}
+.sec-full-name{font-size:14px;font-weight:600;color:var(--txt)}
+.sec-full-sub{font-size:11px;color:var(--txt3);margin-top:2px}
+.sec-full-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sec-arrow{color:var(--txt3);font-size:12px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 5px var(--green)}
+.warn-dot{width:7px;height:7px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 5px var(--red)}
+
+/* ── Activity feed ── */
+.feed{padding:0 20px 4px;display:flex;flex-direction:column;gap:2px}
+.feed-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;
+  background:var(--card);border-radius:12px;border:1px solid var(--border)}
+.feed-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.feed-text{font-size:12px;color:var(--txt2);line-height:1.4;flex:1}
+.feed-text strong{color:var(--txt);font-weight:600}
+.feed-time{font-size:10px;color:var(--txt3);flex-shrink:0;margin-top:1px}
+
+/* ── Quick actions row ── */
+.qa-row{display:flex;gap:8px;padding:0 20px 4px;overflow-x:auto}
+.qa-row::-webkit-scrollbar{display:none}
+.qa-btn{
+  flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:10px 12px;background:var(--card);border-radius:14px;
+  border:1px solid var(--border);cursor:pointer;
+}
+.qa-ico{font-size:18px}
+.qa-lbl{font-size:10px;font-weight:600;color:var(--txt2);white-space:nowrap}
+
+/* ── Icon bg ── */
+.ba{background:rgba(245,158,11,.12)} .bb{background:rgba(59,130,246,.12)}
+.bg{background:rgba(16,185,129,.12)} .br{background:rgba(239,68,68,.12)}
+.bp{background:rgba(168,85,247,.12)} .bt{background:rgba(20,184,166,.12)}
+.bs{background:rgba(148,163,184,.10)} .brose{background:rgba(244,63,94,.12)}
+</style>
+</head>
+<body>
+
+<div class="page-title">Proje Detay Ekranı</div>
+<div class="page-sub">Bağcılar Konut Projesi · İç Bölümler</div>
+
+<div class="phone">
+
+  <!-- Status -->
+  <div class="sb">
+    <span>09:41</span>
+    <div class="si">
+      <svg width="13" height="10" viewBox="0 0 13 10" fill="none"><rect x="0" y="2.5" width="2.5" height="7.5" rx=".8" fill="currentColor" opacity=".35"/><rect x="3.5" y="1.5" width="2.5" height="8.5" rx=".8" fill="currentColor" opacity=".6"/><rect x="7" y="0" width="2.5" height="10" rx=".8" fill="currentColor" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="10" rx=".8" fill="currentColor"/></svg>
+      <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1 3.5a8 8 0 0 1 12 0M3 5.5a5.5 5.5 0 0 1 8 0M5 7.5a3 3 0 0 1 4 0M7 9.5h.01"/></svg>
+      <svg width="20" height="11" viewBox="0 0 20 11" fill="none"><rect x=".5" y=".5" width="16" height="10" rx="2.5" stroke="currentColor" stroke-opacity=".3"/><rect x="2" y="2" width="11" height="7" rx="1.5" fill="currentColor"/><path d="M18 3.5v3a1.5 1.5 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <!-- Navigasyon -->
+    <div class="hero-nav">
+      <button class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="hero-actions">
+        <button class="hact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="hact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </button>
+        <!-- Toggle aktif/pasif -->
+        <label class="toggle" style="margin-left:4px">
+          <input type="checkbox" checked>
+          <div class="tsl"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Proje başlık -->
+    <div class="hero-head">
+      <div>
+        <div class="hero-title">Bağcılar Konut</div>
+        <div class="hero-loc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          İstanbul / Bağcılar
+        </div>
+      </div>
+    </div>
+
+    <!-- Etiketler -->
+    <div class="hero-tags">
+      <div class="htag green">● Aktif</div>
+      <div class="htag amber">📅 Mar 2025 – Oca 2027</div>
+      <div class="htag blue">👤 Proje Müdürü: A.Yılmaz</div>
+    </div>
+
+    <!-- İlerleme -->
+    <div class="progress-strip">
+      <div class="ps-row">
+        <div class="ps-lbl">Genel İlerleme</div>
+        <div class="ps-pct">%82</div>
+      </div>
+      <div class="ps-track"><div class="ps-fill" style="width:82%"></div></div>
+    </div>
+
+    <!-- İstatistikler -->
+    <div class="stat-row">
+      <div class="stat"><div class="stat-v" style="color:var(--txt)">24</div><div class="stat-l">Personel</div></div>
+      <div class="stat"><div class="stat-v" style="color:var(--amber)">5</div><div class="stat-l">Makine</div></div>
+      <div class="stat"><div class="stat-v" style="color:var(--blue)">₺2.4M</div><div class="stat-l">Bütçe</div></div>
+      <div class="stat"><div class="stat-v" style="color:var(--green)">182</div><div class="stat-l">İş Günü</div></div>
+    </div>
+  </div>
+
+  <!-- SCROLL CONTENT -->
+  <div class="sa">
+
+    <!-- Hızlı Eylemler -->
+    <div class="slabel">HIZLI İŞLEMLER</div>
+    <div class="qa-row">
+      <div class="qa-btn"><div class="qa-ico">📋</div><div class="qa-lbl">Rapor Ekle</div></div>
+      <div class="qa-btn"><div class="qa-ico">📷</div><div class="qa-lbl">Fotoğraf</div></div>
+      <div class="qa-btn"><div class="qa-ico">👷</div><div class="qa-lbl">Puantaj</div></div>
+      <div class="qa-btn"><div class="qa-ico">⚠️</div><div class="qa-lbl">Olay Bildir</div></div>
+      <div class="qa-btn"><div class="qa-ico">💬</div><div class="qa-lbl">Mesaj</div></div>
+    </div>
+
+    <!-- Raporlama & Belgeler -->
+    <div class="slabel">RAPORLAMA & BELGELER</div>
+    <div class="sec-grid">
+
+      <div class="sec-card highlight">
+        <div class="sec-ico ba">📋</div>
+        <div class="sec-name">Günlük Raporlar</div>
+        <div class="sec-sub">Son: bugün 08:30</div>
+        <div class="sec-badge red">3</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bb">✏️</div>
+        <div class="sec-name">Taslaklar</div>
+        <div class="sec-sub">2 kaydedilmiş</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bp">📊</div>
+        <div class="sec-name">Haftalık Özet</div>
+        <div class="sec-sub">Otomatik üretilir</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bt">📄</div>
+        <div class="sec-name">Aylık Rapor</div>
+        <div class="sec-sub">Mayıs hazır</div>
+        <div class="sec-badge green">✓</div>
+      </div>
+
+    </div>
+
+    <!-- Planlama & Takip -->
+    <div class="slabel">PLANLAMA & TAKİP</div>
+    <div class="sec-grid">
+
+      <div class="sec-card">
+        <div class="sec-ico bg">📅</div>
+        <div class="sec-name">İş Planı</div>
+        <div class="sec-sub">Gantt görünümü</div>
+      </div>
+
+      <div class="sec-card warn">
+        <div class="sec-ico ba">⏱️</div>
+        <div class="sec-name">Puantaj</div>
+        <div class="sec-sub">Bugün girilmedi</div>
+        <div class="sec-badge amber">!</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bb">📐</div>
+        <div class="sec-name">Metraj</div>
+        <div class="sec-sub">İmalat miktarları</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bs">✅</div>
+        <div class="sec-name">Kontrol Listesi</div>
+        <div class="sec-sub">18/24 tamamlandı</div>
+      </div>
+
+    </div>
+
+    <!-- Kaynak Yönetimi -->
+    <div class="slabel">KAYNAK YÖNETİMİ</div>
+    <div class="sec-grid">
+
+      <div class="sec-card warn">
+        <div class="sec-ico ba">📦</div>
+        <div class="sec-name">Stok & Malzeme</div>
+        <div class="sec-sub">Demir kritik!</div>
+        <div class="sec-badge amber">!</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bp">👥</div>
+        <div class="sec-name">Ekip</div>
+        <div class="sec-sub">24 personel</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bt">🚜</div>
+        <div class="sec-name">İş Makineleri</div>
+        <div class="sec-sub">5 aktif araç</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bg">💰</div>
+        <div class="sec-name">Hakediş</div>
+        <div class="sec-sub">Haziran hazırlanıyor</div>
+      </div>
+
+    </div>
+
+    <!-- Güvenlik & Uyum -->
+    <div class="slabel">GÜVENLİK & UYUM</div>
+
+    <div class="sec-full danger">
+      <div class="sec-full-ico br">🦺</div>
+      <div class="sec-full-info">
+        <div class="sec-full-name">İSG Yönetimi</div>
+        <div class="sec-full-sub">Bugün denetim planlandı · 14:00</div>
+      </div>
+      <div class="sec-full-right">
+        <div class="warn-dot"></div>
+        <div class="sec-arrow">›</div>
+      </div>
+    </div>
+
+    <div class="sec-full" style="margin-top:10px">
+      <div class="sec-full-ico br">⚠️</div>
+      <div class="sec-full-info">
+        <div class="sec-full-name">Olay / Kaza Kayıtları</div>
+        <div class="sec-full-sub">Bu ay: 0 olay · son 90 gün: 1</div>
+      </div>
+      <div class="sec-full-right"><div class="sec-arrow">›</div></div>
+    </div>
+
+    <div class="sec-full" style="margin-top:10px">
+      <div class="sec-full-ico ba">📜</div>
+      <div class="sec-full-info">
+        <div class="sec-full-name">İzin & Ruhsat Takibi</div>
+        <div class="sec-full-sub">3 belge · 1 yenileme yaklaşıyor</div>
+      </div>
+      <div class="sec-full-right">
+        <div class="warn-dot"></div>
+        <div class="sec-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Medya & İletişim -->
+    <div class="slabel">MEDYA & İLETİŞİM</div>
+    <div class="sec-grid">
+
+      <div class="sec-card">
+        <div class="sec-ico bt">🖼️</div>
+        <div class="sec-name">Galeri</div>
+        <div class="sec-sub">238 fotoğraf</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bb">📁</div>
+        <div class="sec-name">Dosyalar</div>
+        <div class="sec-sub">47 belge, 3 çizim</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bg">💬</div>
+        <div class="sec-name">Mesajlar</div>
+        <div class="sec-sub">WhatsApp günlüğü</div>
+        <div class="sec-badge red">2</div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-ico bs">📝</div>
+        <div class="sec-name">Toplantı Notları</div>
+        <div class="sec-sub">Son: 28 Mayıs</div>
+      </div>
+
+    </div>
+
+    <!-- Harita & Konum -->
+    <div class="slabel">HARİTA & KONUM</div>
+    <div class="sec-full">
+      <div class="sec-full-ico bb">🗺️</div>
+      <div class="sec-full-info">
+        <div class="sec-full-name">Saha Haritası</div>
+        <div class="sec-full-sub">İstanbul, Bağcılar · GPS: 41.03°N 28.85°E</div>
+      </div>
+      <div class="sec-full-right">
+        <div class="live-dot"></div>
+        <div class="sec-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Son Aktiviteler -->
+    <div class="slabel">SON AKTİVİTELER</div>
+    <div class="feed">
+      <div class="feed-item">
+        <div class="feed-dot" style="background:var(--green)"></div>
+        <div class="feed-text"><strong>Günlük rapor</strong> oluşturuldu — Formen A.Kaya</div>
+        <div class="feed-time">08:30</div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot" style="background:var(--amber)"></div>
+        <div class="feed-text"><strong>Stok uyarısı:</strong> Demir kritik seviyede</div>
+        <div class="feed-time">07:15</div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot" style="background:var(--blue)"></div>
+        <div class="feed-text"><strong>24 personel</strong> sahaya giriş yaptı</div>
+        <div class="feed-time">07:00</div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot" style="background:var(--txt3)"></div>
+        <div class="feed-text"><strong>ISG denetimi</strong> bugün 14:00'e planlandı</div>
+        <div class="feed-time">Dün</div>
+      </div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div>
+
+</div>
+
+</body>
+</html>

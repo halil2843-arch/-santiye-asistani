@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import type { SantiyeResponse, RaporResponse } from '@/types';
+import type { SantiyeResponse, RaporResponse, PreviewResponse } from '@/types';
 import { formatDate } from '@/lib/utils';
 
 export default function RaporlarPage() {
@@ -16,6 +16,11 @@ export default function RaporlarPage() {
   const [raporlar, setRaporlar] = useState<RaporResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [approving, setApproving] = useState<string | null>(null);
+
+  // Önizleme
+  const [preview, setPreview] = useState<PreviewResponse | null>(null);
+  const [previewLoading, setPreviewLoading] = useState<string | null>(null);
+  const [activeSheet, setActiveSheet] = useState(0);
 
   useEffect(() => {
     if (authLoading) return;
@@ -46,9 +51,6 @@ export default function RaporlarPage() {
   const handleDownload = (raporId: string) => {
     const token = localStorage.getItem('access_token');
     const url = `http://localhost:8000/api/v1/reports/${raporId}/download`;
-    const a = document.createElement('a');
-    a.href = url;
-    // Bearer token için fetch ile indir
     fetch(url, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.blob())
       .then((blob) => {
@@ -57,7 +59,17 @@ export default function RaporlarPage() {
         link.download = `rapor_${raporId.slice(0, 8)}.xlsx`;
         link.click();
       });
-    void a;
+  };
+
+  const handlePreview = async (raporId: string) => {
+    setPreviewLoading(raporId);
+    try {
+      const data = await api.previewRapor(raporId);
+      setPreview(data);
+      setActiveSheet(0);
+    } finally {
+      setPreviewLoading(null);
+    }
   };
 
   return (
@@ -123,13 +135,23 @@ export default function RaporlarPage() {
                       <td className="px-6 py-4">
                         <div className="flex gap-2 justify-end">
                           {r.cikti_dosya_yolu && (
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => handleDownload(r.id)}
-                            >
-                              ⬇ İndir
-                            </Button>
+                            <>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                loading={previewLoading === r.id}
+                                onClick={() => handlePreview(r.id)}
+                              >
+                                🔍 Önizle
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => handleDownload(r.id)}
+                              >
+                                ⬇ İndir
+                              </Button>
+                            </>
                           )}
                           {r.durum === 'taslak' && (
                             <Button
@@ -151,6 +173,101 @@ export default function RaporlarPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Önizleme Modal */}
+      {preview && (
+        <PreviewModal
+          preview={preview}
+          activeSheet={activeSheet}
+          onSheetChange={setActiveSheet}
+          onClose={() => setPreview(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function PreviewModal({
+  preview,
+  activeSheet,
+  onSheetChange,
+  onClose,
+}: {
+  preview: PreviewResponse;
+  activeSheet: number;
+  onSheetChange: (i: number) => void;
+  onClose: () => void;
+}) {
+  const sayfa = preview.sayfalar[activeSheet];
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="bg-white rounded-xl shadow-2xl w-[95vw] max-w-6xl max-h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+          <h2 className="text-lg font-semibold text-slate-900">Rapor Önizleme</h2>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Sekme seçici */}
+        {preview.sayfalar.length > 1 && (
+          <div className="flex gap-1 px-6 pt-3 border-b border-slate-200">
+            {preview.sayfalar.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => onSheetChange(i)}
+                className={`px-4 py-2 text-sm rounded-t-lg font-medium transition-colors ${
+                  activeSheet === i
+                    ? 'bg-orange-500 text-white'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {s.isim}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Tablo */}
+        <div className="flex-1 overflow-auto p-4">
+          {sayfa ? (
+            <table className="border-collapse text-xs font-mono">
+              <tbody>
+                {sayfa.satirlar.map((satir, ri) => (
+                  <tr key={ri}>
+                    {satir.map((hucre, ci) => (
+                      <td
+                        key={ci}
+                        style={{
+                          minWidth: sayfa.sutun_genislikleri[ci]
+                            ? `${Math.min(Math.max(sayfa.sutun_genislikleri[ci] * 7, 60), 300)}px`
+                            : '80px',
+                          textAlign: hucre.hizalama === 'center' ? 'center' : hucre.hizalama === 'right' ? 'right' : 'left',
+                        }}
+                        className={`border border-slate-200 px-2 py-1 whitespace-pre-wrap break-words align-top ${
+                          hucre.kalin ? 'font-bold bg-slate-50' : ''
+                        } ${hucre.deger === null ? 'text-slate-300' : 'text-slate-800'}`}
+                      >
+                        {hucre.deger ?? ''}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="text-slate-400 text-sm text-center py-8">Veri yok</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

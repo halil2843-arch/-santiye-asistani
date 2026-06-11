@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Boolean, DateTime, Enum, ForeignKey, JSON
+from sqlalchemy import Column, String, Boolean, DateTime, Enum, Float, ForeignKey, JSON
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -19,6 +19,11 @@ class Santiye(Base):
     adres = Column(String(500), nullable=True)
     whatsapp_numara = Column(String(30), nullable=True, unique=True, index=True)
     aktif = Column(Boolean, default=True)
+    il = Column(String(100), nullable=True)
+    ilce = Column(String(100), nullable=True)
+    enlem = Column(Float, nullable=True)
+    boylam = Column(Float, nullable=True)
+    arsiv = Column(Boolean, default=False, nullable=False, server_default='0')
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -48,10 +53,12 @@ class Sablon(Base):
     musteri_id = Column(String(36), ForeignKey("musteriler.id", ondelete="CASCADE"), nullable=False, index=True)
     santiye_id = Column(String(36), ForeignKey("santiyeler.id", ondelete="SET NULL"), nullable=True)
     isim = Column(String(200), nullable=False)
-    format = Column(Enum("xlsx", "docx", name="format_enum"), nullable=False)
+    format = Column(Enum("xlsx", "docx", name="format_enum", native_enum=False), nullable=False)
     dosya_yolu = Column(String(500), nullable=False)
     # {"B3": "tarih", "O8": "jcb_saat", "D8": "proje_muduru_saha_py", ...}
     alan_esleme = Column(JSON, nullable=False, default=dict)
+    tip = Column(String(50), nullable=True, default="gunluk_rapor")
+    # tip değerleri: "gunluk_rapor", "hakedis", "isg", "puantaj", "aylik_ozet", "diger"
     aktif = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

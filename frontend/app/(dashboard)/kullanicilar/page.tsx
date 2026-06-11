@@ -38,6 +38,7 @@ export default function KullanicilarPage() {
     telefon_no: '',
   });
   const [kaydediliyor, setKaydediliyor] = useState(false);
+  const [siliniyor, setSiliniyor] = useState<string | null>(null);
 
   const yukle = async () => {
     try {
@@ -74,6 +75,20 @@ export default function KullanicilarPage() {
       goster(aktif ? 'Kullanıcı aktif edildi.' : 'Kullanıcı pasif edildi.');
     } catch (e: unknown) {
       goster(e instanceof Error ? e.message : 'İşlem hatası', true);
+    }
+  };
+
+  const kullaniciSil = async (id: string) => {
+    if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
+    setSiliniyor(id);
+    try {
+      await api.deleteKullanici(id);
+      setKullanicilar(prev => prev.filter(k => k.id !== id));
+      goster('Kullanıcı silindi.');
+    } catch (e: unknown) {
+      goster(e instanceof Error ? e.message : 'Silme hatası', true);
+    } finally {
+      setSiliniyor(null);
     }
   };
 
@@ -134,6 +149,7 @@ export default function KullanicilarPage() {
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Telefon</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Rol</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Durum</th>
+                <th className="text-right px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -163,6 +179,15 @@ export default function KullanicilarPage() {
                       }`}
                     >
                       {k.aktif ? 'Aktif' : 'Pasif'}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => kullaniciSil(k.id)}
+                      disabled={siliniyor === k.id}
+                      className="text-xs px-3 py-1 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 font-medium transition-colors disabled:opacity-50"
+                    >
+                      {siliniyor === k.id ? '...' : 'Sil'}
                     </button>
                   </td>
                 </tr>

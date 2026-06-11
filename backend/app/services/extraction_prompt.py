@@ -23,11 +23,16 @@ TEMEL KURALLAR — HİÇBİR ZAMAN İHLAL ETME:
 1. HALÜSINASYON YASAĞI: Mesajlarda geçmeyen hiçbir bilgiyi üretme.
    - Mesajda sayı yoksa sayi alanına 0 veya tahmin yazma, o kaydı oluşturma.
    - Mesajda makine adı geçmiyorsa makine kaydı oluşturma.
-2. EKSİK BİLGİ YÖNETİMİ: Bilgi eksikse ilgili alanı null bırak veya belirsiz_alanlar listesine ekle.
+2. EKSİK BİLGİ YÖNETİMİ:
+   - Bilgi kesinlikle eksikse ilgili alanı null bırak veya belirsiz_alanlar listesine ekle.
+   - PERSONEL SAYISI İSTİSNASI: Mesajda toplam kişi sayısı net geçiyorsa (örn. "15 işçi"),
+     bu kişileri iş kalemlerine orantılı dağıt ve guven_skoru=0.7 ile işaretle.
+     "birkaç", "bazı", "bir grup" gibi belirsiz ifadelerde TAHMIN ETME — belirsiz_alanlar'a ekle.
+   - Makine adet sayısı "bir", "bir adet", "1 adet" gibi net belirtilmişse sayi=1 yaz.
 3. GÜVEN SKORU ZORUNLU: Her kayıt için guven_skoru belirle:
    - 1.0  → Mesajda kelimesi kelimesine geçen bilgi
-   - 0.7–0.9 → Bağlamdan çıkarsanan bilgi ("JCB" → ekskavatör)
-   - 0.4–0.6 → Belirsiz/tahminî bilgi ("birkaç" ifadesi)
+   - 0.7–0.9 → Bağlamdan çıkarsanan bilgi ("JCB" → ekskavatör, toplam sayıdan dağıtılan personel)
+   - 0.4–0.6 → Belirsiz/tahminî bilgi ("birkaç", "bir grup", "bazı" gibi ifadeler)
 4. ÇIKTI DİLİ: Tüm alan değerleri Türkçe.
 5. TARİH: Mesajda tarih geçmiyorsa bugünün tarihini kullan.
 6. STANDARTLAŞTIRMA: Makine isimlerini standartlaştır, orijinali koru.
@@ -48,6 +53,42 @@ TEMEL KURALLAR — HİÇBİR ZAMAN İHLAL ETME:
    Örnek: "Grobeton dökümü 5 usta 3 beden 1 formen, temel kazısı 4 beden 1 formen"
    → betonarme: usta_sayisi=5, duz_isci_sayisi=3, formen_sayisi=1
    → kazi:      usta_sayisi=null, duz_isci_sayisi=4, formen_sayisi=1
+9. KONUM BİLGİSİ (il / ilçe):
+   - Mesajda şehir, ilçe veya semt adı geçiyorsa il ve ilce alanlarını doldur.
+   - Türkiye'deki bilinen semt → ilçe eşlemelerini kullan:
+     Bağcılar → İstanbul (il), Bağcılar (ilçe)
+     Kadıköy  → İstanbul (il), Kadıköy (ilçe)
+     Çankaya  → Ankara (il), Çankaya (ilçe)
+   - Sadece ilçe/semt belirtilmişse, il'i bağlamdan çıkarsamaya çalış; emin değilsen null bırak.
+   - Konum hiç geçmiyorsa her iki alan da null olmalı.
+
+═══ FEW-SHOT ÖRNEKLER ═══
+
+ÖRNEK GİRİŞ 1:
+"Bugün Bağcılar şantiyesinde 15 işçi çalıştı, 2 kazıcı vardı, hafriyat tamamlandı"
+
+BEKLENEN ÇIKTI 1:
+{
+  "tarih": "<bugün>",
+  "konum": {"il": "İstanbul", "ilce": "Bağcılar"},
+  "personel": [{"ekip_adi": "hafriyat", "meslek": "duz_isci", "sayi": 15, "guven_skoru": 1.0}],
+  "makineler": [{"makine_tipi": "ekskavatör (kazıcı)", "sayi": 2, "calisma_saati": null, "guven_skoru": 1.0}],
+  "yapilan_isler": [{"kategori": "kazi", "aciklama": "hafriyat tamamlandı", "calisan_sayisi": 15, "usta_sayisi": null, "duz_isci_sayisi": 15, "formen_sayisi": null, "ilgili_firma": null, "guven_skoru": 1.0}],
+  "belirsiz_alanlar": []
+}
+
+ÖRNEK GİRİŞ 2:
+"8 usta 4 beden ile döşeme kalıp imalatı yapıldı, 1 beton pompası sahada"
+
+BEKLENEN ÇIKTI 2:
+{
+  "tarih": "<bugün>",
+  "konum": {"il": null, "ilce": null},
+  "personel": [{"ekip_adi": "kalıp ekibi", "meslek": "usta", "sayi": 8, "guven_skoru": 1.0}, {"ekip_adi": "kalıp ekibi", "meslek": "duz_isci", "sayi": 4, "guven_skoru": 1.0}],
+  "makineler": [{"makine_tipi": "beton_pompasi", "sayi": 1, "calisma_saati": null, "guven_skoru": 1.0}],
+  "yapilan_isler": [{"kategori": "betonarme", "aciklama": "döşeme kalıp imalatı", "calisan_sayisi": 12, "usta_sayisi": 8, "duz_isci_sayisi": 4, "formen_sayisi": null, "ilgili_firma": null, "guven_skoru": 1.0}],
+  "belirsiz_alanlar": []
+}
 """
 
 VISION_SYSTEM_PROMPT = """Sen bir Türk inşaat şantiyesi görsel analiz asistanısın.
@@ -195,11 +236,12 @@ EKSTRACTİON GÖREVİ
 
 Standart kategoriler:
   1. tarih          → Mesajdan çıkar, yoksa bugün ({bugun_obj.strftime('%d.%m.%Y')})
-  2. hava_durumu    → sabah/öğleden sonra + sıcaklık
-  3. personel       → ekip_adi, meslek, sayi (her ekip için ayrı kayıt)
-  4. makineler      → makine_tipi, sayi, calisma_saati
-  5. yapilan_isler  → kategori, aciklama, ilgili_firma
-  6. malzeme_girisi → malzeme_adi, miktar, birim
+  2. konum          → il ve ilçe bilgisi (şehir/semt adı geçiyorsa çıkar, yoksa null)
+  3. hava_durumu    → sabah/öğleden sonra + sıcaklık
+  4. personel       → ekip_adi, meslek, sayi (her ekip için ayrı kayıt)
+  5. makineler      → makine_tipi, sayi, calisma_saati
+  6. yapilan_isler  → kategori, aciklama, ilgili_firma
+  7. malzeme_girisi → malzeme_adi, miktar, birim
 
 ŞABLONA ÖZGÜ ZORUNLU DEĞER KISITLAMALARI:
 {sablon_rehberi}
@@ -210,6 +252,10 @@ Standart kategoriler:
 
 {{
   "tarih": "YYYY-MM-DD",
+  "konum": {{
+    "il": "string veya null",
+    "ilce": "string veya null"
+  }},
   "hava_durumu": {{
     "sabah": "string veya null",
     "ogleden_sonra": "string veya null",
@@ -257,6 +303,9 @@ Bu veriyi kullanarak Excel şablon alanlarını doğrudan doldur.
 
 SABİT ALANLAR:
   santiye_adi        → santiye_adi alanını kullan
+  proje_adi          → proje_adi hücresi veya benzeri (proje adı, iş adı, sözleşme adı)
+  santiye_il         → il, sehir, lokasyon gibi hücreler — konum.il değerini yaz
+  santiye_ilce       → ilce, semt, bolge gibi hücreler — konum.ilce değerini yaz
   tarih              → tarih alanını "DD.MM.YYYY" formatında yaz
   hava_sabah         → hava_durumu.sabah
   hava_ogleden_sonra → hava_durumu.ogleden_sonra

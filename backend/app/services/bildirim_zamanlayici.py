@@ -4,8 +4,7 @@ import logging
 from datetime import date, datetime, timedelta, timezone
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from sqlalchemy import cast, select
-from sqlalchemy.dialects.sqlite import DATE as SqliteDate
+from sqlalchemy import func, select
 
 from app.core.database import AsyncSessionLocal
 from app.models.koordinator import Koordinator
@@ -34,7 +33,7 @@ async def gec_rapor_uyarisi_gonder() -> None:
             for santiye in santiyeler:
                 mesaj_stmt = select(WhatsappMesaji.id).where(
                     WhatsappMesaji.santiye_id == santiye.id,
-                    cast(WhatsappMesaji.created_at, SqliteDate) == bugun,
+                    func.date(WhatsappMesaji.created_at) == bugun,
                 ).limit(1)
                 mesaj_var = (await db.execute(mesaj_stmt)).first() is not None
                 if mesaj_var:

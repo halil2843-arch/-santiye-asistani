@@ -55,6 +55,7 @@ export default function KoordinatorPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Bu koordinatörü silmek istediğinize emin misiniz?')) return;
     setDeleting(id);
     try {
       await api.deleteKoordinatör(id);

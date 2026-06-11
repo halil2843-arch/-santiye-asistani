@@ -6,6 +6,8 @@ DELETE /api/v1/templates/{template_id} — şablon sil
 """
 
 import os
+import re
+import unicodedata
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
@@ -25,6 +27,45 @@ DbDep = Annotated[AsyncSession, Depends(get_db)]
 
 _ALLOWED_EXTENSIONS = {".xlsx", ".docx"}
 
+# Dosya boyutu limiti: 10 MB
+_MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
+
+# ZIP magic bytes — OOXML (xlsx/docx) ZIP tabanlı formattır
+_MAGIC_ZIP = b"PK\x03\x04"
+
+
+def _check_magic_bytes(content: bytes, ext: str) -> bool:
+    """Dosya içeriğinin gerçek formatını magic bytes ile doğrular.
+
+    xlsx ve docx her ikisi de ZIP (OOXML) tabanlıdır; ilk 4 byte PK\\x03\\x04 olmalıdır.
+    Sadece uzantıya güvenmek MIME-spoofing saldırısına açıktır.
+    """
+    if ext in {".xlsx", ".docx"}:
+        return content[:4] == _MAGIC_ZIP
+    return False
+
+
+def _sanitize_filename(filename: str) -> str:
+    """Dosya adını güvenli hale getirir.
+
+    - Türkçe / Unicode karakterleri ASCII'ye dönüştürür (NFKD normalize).
+    - Boşlukları alt çizgiye çevirir.
+    - Alfanümerik, nokta, tire ve alt çizgi dışındaki karakterleri siler.
+    - Path traversal karakterlerini (/, \\, ..) engeller.
+    """
+    # Unicode normalize: ş→s, ç→c, ğ→g vb.
+    normalized = unicodedata.normalize("NFKD", filename)
+    ascii_name = normalized.encode("ascii", "ignore").decode("ascii")
+    # Boşluk → alt çizgi
+    ascii_name = ascii_name.replace(" ", "_")
+    # İzin verilmeyen karakterleri kaldır
+    ascii_name = re.sub(r"[^A-Za-z0-9_.\-]", "", ascii_name)
+    # Birden fazla noktayı ve path traversal'ı önle
+    ascii_name = re.sub(r"\.{2,}", ".", ascii_name)
+    # Başta/sonda nokta veya alt çizgi olmasın
+    ascii_name = ascii_name.strip("._")
+    return ascii_name or "dosya"
+
 
 # ---------------------------------------------------------------------------
 # Pydantic response modelleri
@@ -43,6 +84,7 @@ class SablonResponse(BaseModel):
     format: str
     dosya_yolu: str
     alan_esleme: dict  # type: ignore[type-arg]
+    tip: str | None
     aktif: bool
 
 
@@ -91,6 +133,7 @@ async def upload_template(
     isim: Annotated[str, Form(...)],
     dosya: Annotated[UploadFile, File(...)],
     santiye_id: Annotated[str | None, Form()] = None,
+    tip: Annotated[str, Form()] = "gunluk_rapor",
 ) -> SablonResponse:
     """Multipart form ile .xlsx veya .docx şablon yükler.
 
@@ -113,14 +156,49 @@ async def upload_template(
 
     fmt = ext.lstrip(".")  # "xlsx" veya "docx"
 
+    # Dosyayı belleğe oku
+    try:
+        content = await dosya.read()
+    except OSError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Dosya okunamadı: {exc}",
+        ) from exc
+
+    # Boyut kontrolü: 10 MB limitini aş → reddet
+    if len(content) > _MAX_FILE_SIZE_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Dosya boyutu {len(content) // (1024*1024)} MB, maksimum 10 MB.",
+        )
+
+    # Magic bytes kontrolü: gerçek dosya formatını doğrula (MIME spoofing önlemi)
+    if not _check_magic_bytes(content, ext):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Dosya içeriği {ext} formatıyla uyuşmuyor. Lütfen geçerli bir {ext} dosyası yükleyin.",
+        )
+
+    # Güvenli dosya adı oluştur: Türkçe/unicode karakter ve path traversal koruması
+    original_name = os.path.splitext(dosya.filename)[0]
+    safe_name = _sanitize_filename(original_name)
+    safe_filename = f"{safe_name}{ext}"
+
     # Kayıt dizini ve dosya yolu
     upload_dir = _ensure_upload_dir(musteri_id)
-    safe_filename = dosya.filename.replace(" ", "_")
     dosya_yolu = os.path.join(upload_dir, safe_filename)
+
+    # Path traversal son kontrol: yol upload dizini dışına çıkmamalı
+    abs_upload_dir = os.path.abspath(upload_dir)
+    abs_dosya_yolu = os.path.abspath(dosya_yolu)
+    if not abs_dosya_yolu.startswith(abs_upload_dir + os.sep):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Geçersiz dosya adı.",
+        )
 
     # Dosyayı diske yaz
     try:
-        content = await dosya.read()
         with open(dosya_yolu, "wb") as f:
             f.write(content)
     except OSError as exc:
@@ -150,6 +228,7 @@ async def upload_template(
         format=fmt,
         dosya_yolu=dosya_yolu,
         alan_esleme=alan_esleme,
+        tip=tip,
     )
     db.add(sablon)
     await db.commit()
@@ -166,11 +245,19 @@ async def upload_template(
 async def list_templates(
     db: DbDep,
     musteri_id: CurrentMusteriId,
+    tip: str | None = None,
 ) -> list[SablonResponse]:
-    """Token'daki tenant'a ait aktif şablonları döndürür."""
+    """Token'daki tenant'a ait aktif şablonları döndürür.
+
+    Query parametresi:
+        tip: Opsiyonel şablon türü filtresi (gunluk_rapor, hakedis, isg, puantaj, aylik_ozet, diger)
+    """
+    conditions = [Sablon.musteri_id == musteri_id, Sablon.aktif.is_(True)]
+    if tip is not None:
+        conditions.append(Sablon.tip == tip)
     stmt = (
         select(Sablon)
-        .where(Sablon.musteri_id == musteri_id, Sablon.aktif.is_(True))
+        .where(*conditions)
         .order_by(Sablon.created_at.desc())
     )
     result = await db.execute(stmt)

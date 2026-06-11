@@ -40,7 +40,8 @@ _TARIH_SEKME_PATTERN = re.compile(r"^(\d{2})\.(\d{2})\.(\d{4})$")  # DD.MM.YYYY 
 # Metin içerikli alanlar — boş kalırsa 0 yerine "" yazılır
 _METIN_ALAN_PREFIXLER = {"hava_", "fotograf_", "tarih"}
 _METIN_ALAN_SABIT = {"hava_durumu", "hava_genel", "hava_sabah", "hava_ogleden_sonra",
-                     "hava_sicaklik", "fotograf_analizi", "tarih", "santiye_adi"}
+                     "hava_sicaklik", "fotograf_analizi", "tarih", "santiye_adi",
+                     "proje_adi", "proje_muduru", "santiye_il", "santiye_ilce"}
 
 # Altyüklenici ekip → iş kategorisi eşlemesi
 # Puantaj çizelgesi: {ekip_adi}_{rol} → ilgili kategorilerden rol sayısı toplanır
@@ -129,6 +130,13 @@ def _alan_degerini_coz(alan_adi: str, sonuc: ExtractionSonucu) -> Any:
         return sonuc.fotograf_analizi
     if alan_adi == "toplam_personel":
         return sum(p.sayi for p in sonuc.personel)
+
+    # --- 1b. Proje / şantiye meta alanları ---
+    # Bu alanlar ExtractionSonucu'nda doğrudan bulunmaz; şantiye kaydından beslenir.
+    # rapor_servisi.py'de sonuc nesnesine eklenmesi gerekir (bkz. _EKLENTI notu).
+    # Şimdilik __dict__ içinde varsa döndür, yoksa None → boş string fallback.
+    if alan_adi in ("proje_adi", "proje_muduru", "santiye_il", "santiye_ilce"):
+        return getattr(sonuc, alan_adi, None)
 
     # --- 2. N-indexli liste alanları (personel_0_sayi, makine_1_saat ...) ---
     m = _INDEKS_PATTERN.match(alan_adi)

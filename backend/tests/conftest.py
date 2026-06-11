@@ -19,6 +19,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.database import Base, get_db
+from app.core.rate_limit import rate_limit_sayaci_temizle
 from app.core.security import create_access_token, hash_password
 from app.main import app
 from app.models.tenant import Musteri, Kullanici
@@ -80,6 +81,7 @@ async def client(db_session: AsyncSession):
             raise
 
     app.dependency_overrides[get_db] = override_get_db
+    rate_limit_sayaci_temizle()
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
@@ -138,3 +140,55 @@ async def auth_token(test_kullanici: Kullanici, test_musteri: Musteri) -> str:
 async def auth_headers(auth_token: str) -> dict[str, str]:
     """Authorization header dict'i dondurur."""
     return {"Authorization": f"Bearer {auth_token}"}
+
+
+# ---------------------------------------------------------------------------
+# İkinci tenant (Tenant B) fixture'lari — tenant izolasyon testleri icin
+# ---------------------------------------------------------------------------
+
+
+@pytest_asyncio.fixture
+async def test_musteri_b(db_session: AsyncSession) -> Musteri:
+    """Ikinci tenant icin Musteri nesnesi."""
+    musteri = Musteri(
+        firma_adi="Diger Firma B.V.",
+        email="firma_b@test.com",
+        aktif=True,
+    )
+    db_session.add(musteri)
+    await db_session.flush()
+    return musteri
+
+
+@pytest_asyncio.fixture
+async def test_kullanici_b(db_session: AsyncSession, test_musteri_b: Musteri) -> Kullanici:
+    """Tenant B'ye ait kullanici (sifre: TestPass456)."""
+    kullanici = Kullanici(
+        musteri_id=test_musteri_b.id,
+        ad_soyad="Tenant B Kullanici",
+        email="kullanici_b@test.com",
+        sifre_hash=hash_password("TestPass456"),
+        rol="admin",
+        aktif=True,
+    )
+    db_session.add(kullanici)
+    await db_session.flush()
+    return kullanici
+
+
+@pytest_asyncio.fixture
+async def auth_token_b(test_kullanici_b: Kullanici, test_musteri_b: Musteri) -> str:
+    """Tenant B icin gecerli JWT access token."""
+    return create_access_token(
+        {
+            "sub": test_kullanici_b.id,
+            "mid": test_musteri_b.id,
+            "rol": test_kullanici_b.rol,
+        }
+    )
+
+
+@pytest_asyncio.fixture
+async def auth_headers_b(auth_token_b: str) -> dict[str, str]:
+    """Tenant B icin Authorization header dict'i."""
+    return {"Authorization": f"Bearer {auth_token_b}"}

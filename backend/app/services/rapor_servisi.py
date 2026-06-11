@@ -46,14 +46,19 @@ def _cikti_yolu_olustur(
     rapor_id: str,
     tarih: date,
     format: str,
+    proje_id: str | None = None,
 ) -> str:
     """Aylık çıktı dosyasının tam disk yolunu üretir ve dizini oluşturur.
 
     Aynı ay içindeki tüm günler aynı dosyada ayrı sekmeler olarak tutulur.
     rapor_id parametresi artık kullanılmıyor (geriye dönük uyum için korundu).
+    proje_id verilirse dosya adına proje kodu eklenir.
     """
     ay_str = tarih.strftime("%Y%m")  # "202605"
-    dosya_adi = f"rapor_{ay_str}.{format}"
+    if proje_id:
+        dosya_adi = f"rapor_{proje_id[:8]}_{ay_str}.{format}"
+    else:
+        dosya_adi = f"rapor_{ay_str}.{format}"
 
     dizin = os.path.join(settings.OUTPUT_DIR, santiye_id)
     os.makedirs(dizin, exist_ok=True)
@@ -74,12 +79,15 @@ def _alan_listesi_cikar(alan_esleme: dict) -> list[str]:
 async def uret_rapor(
     rapor_id: str,
     db: AsyncSession,
+    proje_id: str | None = None,
 ) -> str:
     """Raporu uretir ve cikti dosya yolunu dondurur.
 
     Args:
-        rapor_id: Uretilecek raporun UUID'si (Rapor.id).
-        db:       Aktif async veritabani oturumu.
+        rapor_id:  Uretilecek raporun UUID'si (Rapor.id).
+        db:        Aktif async veritabani oturumu.
+        proje_id:  Opsiyonel proje UUID'si; verilirse dosya adı ve başlık satırı
+                   proje koduyla zenginleştirilir.
 
     Returns:
         Uretilen cikti dosyasinin tam disk yolu.
@@ -166,12 +174,25 @@ async def uret_rapor(
     alan_listesi = _alan_listesi_cikar(alan_esleme)
 
     # ------------------------------------------------------------------
-    # 4b. Santiye adini yukle
+    # 4b. Santiye adini yukle; proje adini da çöz (proje_id verilmişse)
     # ------------------------------------------------------------------
     santiye_stmt = select(Santiye).where(Santiye.id == rapor.santiye_id)
     santiye_result = await db.execute(santiye_stmt)
     santiye: Santiye | None = santiye_result.scalar_one_or_none()
     santiye_adi = santiye.isim if santiye else None
+
+    # Proje adını çöz (proje_id verilmişse)
+    proje_adi: str | None = None
+    if proje_id:
+        try:
+            from app.models.proje import Proje  # noqa: PLC0415
+            proje_stmt = select(Proje).where(Proje.id == proje_id)
+            proje_result = await db.execute(proje_stmt)
+            proje_obj = proje_result.scalar_one_or_none()
+            if proje_obj:
+                proje_adi = getattr(proje_obj, "isim", None) or getattr(proje_obj, "adi", None)
+        except Exception:
+            logger.debug("Proje modeli yüklenemedi veya proje bulunamadı: %s", proje_id)
 
     # ------------------------------------------------------------------
     # 5. GPT-4o extraction (sync → thread)
@@ -190,6 +211,8 @@ async def uret_rapor(
     )
 
     sonuc.santiye_adi = santiye_adi
+    if proje_adi and not sonuc.proje_adi:
+        sonuc.proje_adi = proje_adi
     if foto_analizi and not sonuc.fotograf_analizi:
         sonuc.fotograf_analizi = foto_analizi
 
@@ -235,6 +258,7 @@ async def uret_rapor(
         rapor_id=rapor_id,
         tarih=rapor.tarih,  # type: ignore[arg-type]
         format=format_str,
+        proje_id=proje_id,
     )
 
     # ------------------------------------------------------------------
@@ -261,7 +285,34 @@ async def uret_rapor(
     else:
         raise ValueError(f"Desteklenmeyen sablon formati: {format_str!r}")
 
-    logger.info("Cikti dosyasi olusturuldu: %s", cikti_yolu)
+    # Doldurulan alan özeti
+    dolu_alanlar = [ad for ad, val in (llm_mapping or {}).items() if val is not None]
+    bos_alanlar  = [ad for ad, val in (llm_mapping or {}).items() if val is None]
+    toplam_personel = sum(p.sayi for p in sonuc.personel)
+    makine_adeti    = len(sonuc.makineler)
+    is_adeti        = len(sonuc.yapilan_isler)
+    malzeme_adeti   = len(sonuc.malzeme_girisi)
+    belirsiz_adeti  = len(sonuc.belirsiz_alanlar)
+
+    logger.info(
+        "Rapor olusturuldu — dosya=%s sekme=%s format=%s  |  "
+        "personel_toplam=%d ekip=%d  |  makine_adeti=%d  |  "
+        "is_adeti=%d malzeme=%d  |  "
+        "llm_dolu=%d llm_bos=%d belirsiz=%d  |  "
+        "bos_alanlar=[%s]",
+        cikti_yolu,
+        sonuc.tarih.strftime("%d.%m.%Y"),
+        format_str,
+        toplam_personel,
+        len(sonuc.personel),
+        makine_adeti,
+        is_adeti,
+        malzeme_adeti,
+        len(dolu_alanlar),
+        len(bos_alanlar),
+        belirsiz_adeti,
+        ", ".join(bos_alanlar[:10]) + (" ..." if len(bos_alanlar) > 10 else ""),
+    )
 
     # ------------------------------------------------------------------
     # 8. DB guncelle: cikti_dosya_yolu + mesajlari islendi=True

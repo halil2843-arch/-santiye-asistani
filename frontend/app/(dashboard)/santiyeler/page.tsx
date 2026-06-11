@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { SantiyeResponse, PendingPhoneResponse } from '@/types';
+import type { SantiyeResponse, PendingPhoneResponse, NumaraResponse } from '@/types';
 
 interface SantiyeFormData {
   isim: string;
@@ -32,8 +32,16 @@ export default function SantiyelerPage() {
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
 
-  // Numara bağlama
+  // Numara bağlama (pending)
   const [linkingId, setLinkingId] = useState<string | null>(null);
+
+  // Çoklu numara paneli
+  const [expandedSites, setExpandedSites] = useState<Set<string>>(new Set());
+  const [numaralar, setNumaralar] = useState<Record<string, NumaraResponse[]>>({});
+  const [numaraLoading, setNumaraLoading] = useState<string | null>(null);
+  const [yeniNumara, setYeniNumara] = useState<Record<string, string>>({});
+  const [numaraEkleniyor, setNumaraEkleniyor] = useState<string | null>(null);
+  const [numaraSiliniyor, setNumaraSiliniyor] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -49,6 +57,55 @@ export default function SantiyelerPage() {
   useEffect(() => {
     if (!authLoading) load();
   }, [authLoading]);
+
+  const loadNumaralar = useCallback(async (santiyeId: string) => {
+    setNumaraLoading(santiyeId);
+    try {
+      const list = await api.getSantiyeNumaralari(santiyeId);
+      setNumaralar((prev) => ({ ...prev, [santiyeId]: list }));
+    } finally {
+      setNumaraLoading(null);
+    }
+  }, []);
+
+  const toggleNumaralar = (santiyeId: string) => {
+    setExpandedSites((prev) => {
+      const next = new Set(prev);
+      if (next.has(santiyeId)) {
+        next.delete(santiyeId);
+      } else {
+        next.add(santiyeId);
+        if (!numaralar[santiyeId]) loadNumaralar(santiyeId);
+      }
+      return next;
+    });
+  };
+
+  const handleAddNumara = async (santiyeId: string) => {
+    const numara = (yeniNumara[santiyeId] ?? '').trim();
+    if (!numara) return;
+    setNumaraEkleniyor(santiyeId);
+    try {
+      await api.addSantiyeNumarasi(santiyeId, numara);
+      setYeniNumara((prev) => ({ ...prev, [santiyeId]: '' }));
+      await loadNumaralar(santiyeId);
+    } finally {
+      setNumaraEkleniyor(null);
+    }
+  };
+
+  const handleDeleteNumara = async (santiyeId: string, numaraId: string) => {
+    setNumaraSiliniyor(numaraId);
+    try {
+      await api.deleteSantiyeNumarasi(santiyeId, numaraId);
+      setNumaralar((prev) => ({
+        ...prev,
+        [santiyeId]: (prev[santiyeId] ?? []).filter((n) => n.id !== numaraId),
+      }));
+    } finally {
+      setNumaraSiliniyor(null);
+    }
+  };
 
   // --- Yeni şantiye ekle ---
   const handleCreate = async (e: React.FormEvent) => {
@@ -73,14 +130,12 @@ export default function SantiyelerPage() {
     }
   };
 
-  // --- Düzenlemeyi aç ---
   const startEdit = (s: SantiyeResponse) => {
     setEditId(s.id);
     setEditForm({ isim: s.isim, adres: s.adres ?? '', whatsapp_numara: s.whatsapp_numara ?? '' });
     setEditError('');
   };
 
-  // --- Düzenlemeyi kaydet ---
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editId) return;
@@ -100,7 +155,6 @@ export default function SantiyelerPage() {
     }
   };
 
-  // --- Aktiflik toggle ---
   const toggleAktif = async (s: SantiyeResponse) => {
     try {
       const updated = await api.updateSantiye(s.id, { aktif: !s.aktif });
@@ -110,7 +164,6 @@ export default function SantiyelerPage() {
     }
   };
 
-  // --- Numara bağla (pending listesinden) ---
   const linkPhone = async (santiyeId: string, numara: string) => {
     setLinkingId(santiyeId + numara);
     try {
@@ -188,7 +241,7 @@ export default function SantiyelerPage() {
           ) : (
             santiyeler.map((s) =>
               editId === s.id ? (
-                /* --- Düzenleme formu satırı --- */
+                /* --- Düzenleme formu --- */
                 <Card key={s.id} className="border-orange-300">
                   <CardContent className="pt-4">
                     <form onSubmit={handleUpdate} className="space-y-3">
@@ -240,7 +293,7 @@ export default function SantiyelerPage() {
                           )}
                         </p>
                       </div>
-                      <div className="flex gap-2 shrink-0">
+                      <div className="flex gap-2 shrink-0 flex-wrap justify-end">
                         <Button variant="secondary" size="sm" onClick={() => startEdit(s)}>
                           Düzenle
                         </Button>
@@ -252,8 +305,77 @@ export default function SantiyelerPage() {
                         >
                           {s.aktif ? 'Pasife Al' : 'Aktife Al'}
                         </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleNumaralar(s.id)}
+                          className="text-xs"
+                        >
+                          📱 Numaralar {expandedSites.has(s.id) ? '▲' : '▼'}
+                        </Button>
                       </div>
                     </div>
+
+                    {/* Çoklu numara paneli */}
+                    {expandedSites.has(s.id) && (
+                      <div className="mt-4 pt-4 border-t border-slate-100">
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                          Ek WhatsApp Numaraları
+                        </p>
+
+                        {numaraLoading === s.id ? (
+                          <div className="flex justify-center py-4">
+                            <div className="animate-spin w-5 h-5 border-4 border-orange-400 border-t-transparent rounded-full" />
+                          </div>
+                        ) : (
+                          <>
+                            {/* Mevcut numaralar */}
+                            {(numaralar[s.id] ?? []).length === 0 ? (
+                              <p className="text-xs text-slate-400 mb-3">Ek numara yok</p>
+                            ) : (
+                              <ul className="space-y-1 mb-3">
+                                {(numaralar[s.id] ?? []).map((n) => (
+                                  <li
+                                    key={n.id}
+                                    className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2"
+                                  >
+                                    <span className="font-mono text-sm text-slate-800">{n.numara}</span>
+                                    <button
+                                      disabled={numaraSiliniyor === n.id}
+                                      onClick={() => handleDeleteNumara(s.id, n.id)}
+                                      className="text-red-400 hover:text-red-600 text-xs disabled:opacity-40 ml-3"
+                                    >
+                                      {numaraSiliniyor === n.id ? '…' : 'Sil'}
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+
+                            {/* Yeni numara ekle */}
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={yeniNumara[s.id] ?? ''}
+                                onChange={(e) =>
+                                  setYeniNumara((prev) => ({ ...prev, [s.id]: e.target.value }))
+                                }
+                                placeholder="+905551234567"
+                                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddNumara(s.id); } }}
+                                className={inputCls + ' flex-1 text-sm'}
+                              />
+                              <Button
+                                size="sm"
+                                loading={numaraEkleniyor === s.id}
+                                onClick={() => handleAddNumara(s.id)}
+                              >
+                                Ekle
+                              </Button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               )

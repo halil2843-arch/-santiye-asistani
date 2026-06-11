@@ -62,6 +62,12 @@ class HavaDurumu(BaseModel):
     genel_aciklama: Optional[str] = None
 
 
+class Konum(BaseModel):
+    """Santiyenin il/ilce konum bilgisi. Mesajda gecmiyorsa her iki alan da None."""
+    il: Optional[str] = Field(default=None, description="Turkiye il adi (ornek: Istanbul, Ankara)")
+    ilce: Optional[str] = Field(default=None, description="Ilce veya semt adi (ornek: Bagcilar, Kadikoy)")
+
+
 class BelirsizAlan(BaseModel):
     alan_adi: str
     mevcut_deger: Optional[str] = None
@@ -72,6 +78,8 @@ class BelirsizAlan(BaseModel):
 class ExtractionSonucu(BaseModel):
     tarih: date
     santiye_adi: Optional[str] = None
+    proje_adi: Optional[str] = None
+    konum: Optional[Konum] = Field(default=None, description="Mesajdan cikarsanan il/ilce bilgisi")
     hava_durumu: HavaDurumu
     personel: list[PersonelKaydi] = Field(default_factory=list)
     makineler: list[MakineKaydi] = Field(default_factory=list)

@@ -26,7 +26,8 @@ class Settings(BaseSettings):
     # --- Security ---
     SECRET_KEY: str = _DEFAULT_SECRET
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 saat
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60  # 1 saat (production'da kısa tutulmalı)
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7    # 7 gün
 
     # --- LLM (Groq) ---
     GROQ_API_KEY: str = ""
@@ -46,10 +47,31 @@ class Settings(BaseSettings):
     # --- File storage ---
     UPLOAD_DIR: str = "./uploads"
     OUTPUT_DIR: str = "./outputs"
+    STORAGE_BACKEND: str = "local"   # "local" veya "s3"
+    S3_BUCKET: str = ""
+    S3_REGION: str = "eu-central-1"
+    S3_ACCESS_KEY: str = ""
+    S3_SECRET_KEY: str = ""
+
+    # --- Cache ---
+    CACHE_BACKEND: str = "memory"    # "memory" veya "redis"
+    REDIS_URL: str = "redis://localhost:6379"
+
+    # --- Push Notifications (Web Push / VAPID) ---
+    # Üretmek için: py -m py_vapid --gen-key
+    # ya da: openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt
+    VAPID_PUBLIC_KEY: str = ""
+    VAPID_PRIVATE_KEY: str = ""
+    ADMIN_EMAIL: str = "admin@santiye.com"
 
     # --- CORS ---
     # Virgülle ayrılmış origin listesi. "*" tüm originlere izin verir.
     CORS_ORIGINS: str = "*"
+
+    # --- Hava Durumu (OpenWeatherMap Free API) ---
+    # https://openweathermap.org/api'den ücretsiz key alınabilir.
+    # Boş bırakılırsa mock veri döner.
+    OPENWEATHER_API_KEY: str = ""
 
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":

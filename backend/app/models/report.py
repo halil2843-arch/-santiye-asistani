@@ -18,7 +18,7 @@ class Rapor(Base):
     sablon_id = Column(String(36), ForeignKey("sablonlar.id", ondelete="SET NULL"), nullable=True)
     olusturan_id = Column(String(36), ForeignKey("kullanicilar.id", ondelete="SET NULL"), nullable=True)
     tarih = Column(Date, nullable=False, index=True)
-    durum = Column(Enum("taslak", "onaylandi", "iptal", name="durum_enum"), default="taslak")
+    durum = Column(Enum("taslak", "onaylandi", "iptal", name="durum_enum", native_enum=False), default="taslak")
     cikti_dosya_yolu = Column(String(500), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

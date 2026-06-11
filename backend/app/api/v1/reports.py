@@ -12,7 +12,7 @@ from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -57,6 +57,7 @@ class RaporOlusturRequest(BaseModel):
     sablon_id: str
     tarih: date
     mesaj_ids: list[str]
+    proje_id: str | None = None
 
 
 class RaporOlusturResponse(BaseModel):
@@ -82,8 +83,9 @@ async def list_reports(
     db: DbDep,
     musteri_id: CurrentMusteriId,
     tarih: Annotated[date | None, Query(description="Filtre tarihi: YYYY-MM-DD")] = None,
+    proje_id: Annotated[str | None, Query(description="Proje ID ile filtrele")] = None,
 ) -> list[RaporResponse]:
-    """Şantiyenin raporlarını listeler; tarih verilirse o güne filtreler.
+    """Şantiyenin raporlarını listeler; tarih ve/veya proje_id verilirse filtreler.
 
     Tenant isolation: şantiye, token sahibinin tenant'ına ait olmalıdır.
 
@@ -105,6 +107,8 @@ async def list_reports(
     stmt = select(Rapor).where(Rapor.santiye_id == santiye_id)
     if tarih is not None:
         stmt = stmt.where(Rapor.tarih == tarih)
+    if proje_id is not None and hasattr(Rapor, "proje_id"):
+        stmt = stmt.where(Rapor.proje_id == proje_id)  # type: ignore[attr-defined]
     stmt = stmt.order_by(Rapor.tarih.desc())
 
     result = await db.execute(stmt)
@@ -178,7 +182,9 @@ async def generate_report(
 
     # Gerçek rapor üretimi: Groq extraction + şablon doldurma
     try:
-        cikti_yolu = await rapor_servisi.uret_rapor(rapor_id=rapor.id, db=db)
+        cikti_yolu = await rapor_servisi.uret_rapor(
+            rapor_id=rapor.id, db=db, proje_id=payload.proje_id
+        )
         rapor.cikti_dosya_yolu = cikti_yolu  # type: ignore[assignment]
         await db.commit()
         durum_mesaji = f"Rapor başarıyla üretildi: {cikti_yolu}"
@@ -397,3 +403,62 @@ async def preview_report(rapor_id: str, db: DbDep, musteri_id: CurrentMusteriId)
 
     sayfalar = await asyncio.to_thread(_excel_oku, rapor.cikti_dosya_yolu)
     return PreviewResponse(rapor_id=rapor_id, sayfalar=sayfalar)
+
+
+# ---------------------------------------------------------------------------
+# HTML Export — tarayıcıdan yazdırılabilir / PDF'e dönüştürülebilir
+# ---------------------------------------------------------------------------
+
+
+@router.get(
+    "/{rapor_id}/html",
+    response_class=HTMLResponse,
+    summary="Raporu HTML olarak indir (tarayıcıdan yazdırılabilir)",
+)
+async def html_report(
+    rapor_id: str,
+    db: DbDep,
+    musteri_id: CurrentMusteriId,
+) -> HTMLResponse:
+    """Oluşturulmuş Excel raporunu HTML formatında döndürür.
+
+    Dönen sayfa tarayıcıda Ctrl+P / ⌘P ile veya 'Yazdır' butonuyla
+    PDF olarak kaydedilebilir.
+
+    Tenant isolation: rapor, token sahibinin tenant'ına ait şantiyeye bağlı olmalıdır.
+
+    Raises:
+        400: Rapor xlsx formatında değilse.
+        404: Rapor veya çıktı dosyası bulunamazsa.
+    """
+    stmt = (
+        select(Rapor)
+        .join(Santiye, Rapor.santiye_id == Santiye.id)
+        .where(Rapor.id == rapor_id, Santiye.musteri_id == musteri_id)
+    )
+    rapor = (await db.execute(stmt)).scalar_one_or_none()
+    if rapor is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Rapor bulunamadı: {rapor_id}",
+        )
+    if not rapor.cikti_dosya_yolu:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Raporun çıktı dosyası henüz oluşturulmamış.",
+        )
+    if not os.path.exists(rapor.cikti_dosya_yolu):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Çıktı dosyası diskte bulunamadı.",
+        )
+    if not rapor.cikti_dosya_yolu.endswith(".xlsx"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="HTML dışa aktarma sadece Excel (.xlsx) raporlar için destekleniyor.",
+        )
+
+    from app.services.pdf_exporter import excel_to_html  # noqa: PLC0415
+
+    html_icerigi = await asyncio.to_thread(excel_to_html, rapor.cikti_dosya_yolu)
+    return HTMLResponse(content=html_icerigi, status_code=200)

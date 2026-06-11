@@ -20,7 +20,7 @@ def upgrade() -> None:
         sa.Column("firma_adi", sa.String(200), nullable=False),
         sa.Column("email", sa.String(150), nullable=False, unique=True),
         sa.Column("telefon", sa.String(20)),
-        sa.Column("plan", sa.Enum("free", "pro", "enterprise", name="plan_enum"), default="free"),
+        sa.Column("plan", sa.Enum("free", "pro", "enterprise", name="plan_enum", native_enum=False), default="free"),
         sa.Column("aktif", sa.Boolean, default=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(timezone=True), onupdate=sa.func.now()),
@@ -34,7 +34,7 @@ def upgrade() -> None:
         sa.Column("ad_soyad", sa.String(150), nullable=False),
         sa.Column("email", sa.String(150), nullable=False, unique=True),
         sa.Column("telefon_no", sa.String(20)),
-        sa.Column("rol", sa.Enum("admin", "editor", "viewer", name="rol_enum"), default="viewer"),
+        sa.Column("rol", sa.Enum("admin", "editor", "viewer", name="rol_enum", native_enum=False), default="viewer"),
         sa.Column("sifre_hash", sa.String(255), nullable=False),
         sa.Column("aktif", sa.Boolean, default=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
@@ -61,7 +61,7 @@ def upgrade() -> None:
         sa.Column("musteri_id", sa.String(36), sa.ForeignKey("musteriler.id", ondelete="CASCADE"), nullable=False),
         sa.Column("santiye_id", sa.String(36), sa.ForeignKey("santiyeler.id", ondelete="SET NULL"), nullable=True),
         sa.Column("isim", sa.String(200), nullable=False),
-        sa.Column("format", sa.Enum("xlsx", "docx", name="format_enum"), nullable=False),
+        sa.Column("format", sa.Enum("xlsx", "docx", name="format_enum", native_enum=False), nullable=False),
         sa.Column("dosya_yolu", sa.String(500), nullable=False),
         sa.Column("alan_esleme", sa.JSON, nullable=False),
         sa.Column("aktif", sa.Boolean, default=True),
@@ -76,7 +76,7 @@ def upgrade() -> None:
         sa.Column("sablon_id", sa.String(36), sa.ForeignKey("sablonlar.id", ondelete="SET NULL"), nullable=True),
         sa.Column("olusturan_id", sa.String(36), sa.ForeignKey("kullanicilar.id", ondelete="SET NULL"), nullable=True),
         sa.Column("tarih", sa.Date, nullable=False),
-        sa.Column("durum", sa.Enum("taslak", "onaylandi", "iptal", name="durum_enum"), default="taslak"),
+        sa.Column("durum", sa.Enum("taslak", "onaylandi", "iptal", name="durum_enum", native_enum=False), default="taslak"),
         sa.Column("cikti_dosya_yolu", sa.String(500)),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(timezone=True), onupdate=sa.func.now()),
@@ -119,7 +119,5 @@ def downgrade() -> None:
     op.drop_table("santiyeler")
     op.drop_table("kullanicilar")
     op.drop_table("musteriler")
-    op.execute("DROP TYPE IF EXISTS plan_enum")
-    op.execute("DROP TYPE IF EXISTS rol_enum")
-    op.execute("DROP TYPE IF EXISTS format_enum")
-    op.execute("DROP TYPE IF EXISTS durum_enum")
+    # native_enum=False kullandığımız için PostgreSQL'de ayrı TYPE oluşturulmadı;
+    # DROP TYPE çağrısı gereksiz ve hatalara yol açar — kaldırıldı.
